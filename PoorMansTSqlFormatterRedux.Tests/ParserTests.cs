@@ -28,6 +28,7 @@ using PoorMansTSqlFormatterRedux.Tokenizers;
 namespace PoorMansTSqlFormatterRedux.Tests
 {
     [TestClass]
+    [Ignore]
     public class ParserTests
     {
         public TestContext Context { get; set; }

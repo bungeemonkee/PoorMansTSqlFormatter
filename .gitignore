@@ -52,6 +52,10 @@ Ankh.NoLoad
 
 # Nuget
 packages/
+*.nupkg
+
+# Test coverage
+coverage.xml
 
 #Tooling
 _ReSharper*/

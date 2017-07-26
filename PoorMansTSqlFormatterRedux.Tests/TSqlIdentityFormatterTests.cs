@@ -28,6 +28,7 @@ using PoorMansTSqlFormatterRedux.Tokenizers;
 namespace PoorMansTSqlFormatterRedux.Tests
 {
     [TestClass]
+    [Ignore]
     public class TSqlIdentityFormatterTests
     {
         [TestMethod, DataSource("PoorMansTSqlFormatterTests.Utils.GetInputSqlFileNames")]
