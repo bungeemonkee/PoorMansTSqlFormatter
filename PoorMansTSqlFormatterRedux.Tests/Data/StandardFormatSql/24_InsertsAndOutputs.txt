@@ -1,0 +1,104 @@
+﻿--Selects, execs and inserts
+DECLARE @TestMethod1 TABLE (Value1 INT)
+
+INSERT @TestMethod1
+EXEC ('SELECT 1')
+
+SELECT 1
+
+INSERT @TestMethod1
+SELECT 2
+
+EXEC ('SELECT 2')
+
+SELECT *
+FROM @TestMethod1
+
+--Outputs converting inserts to derived tables
+CREATE TABLE #TestMethod1 (TestMethodCol INT)
+
+CREATE TABLE #TestMethod2 (TestMethodCol INT)
+
+INSERT INTO #TestMethod2
+SELECT *
+FROM (
+	INSERT INTO #TestMethod1
+	OUTPUT INSERTED.*
+	SELECT 1
+	) AS TestMethod1
+
+INSERT INTO #TestMethod2
+SELECT *
+FROM (
+	DELETE #TestMethod1
+	OUTPUT 2 AS Whatever
+	) AS TestMethod1
+
+INSERT INTO #TestMethod2
+SELECT *
+FROM (
+	UPDATE #TestMethod2
+	SET TestMethodCol = TestMethodCol - 1
+	OUTPUT deleted.TestMethodCol + 500 AS Whatever
+	) AS TestMethod1
+
+DELETE #TestMethod2
+OUTPUT deleted.*
+INTO #TestMethod1
+
+SELECT *
+FROM #TestMethod1
+
+SELECT *
+FROM #TestMethod2
+
+DROP TABLE #TestMethod1
+
+DROP TABLE #TestMethod2
+GO
+
+--Outputs on simple inserts
+DECLARE @TestMethod1 TABLE (TestMethod2 INT)
+
+INSERT INTO @TestMethod1
+OUTPUT INSERTED.*
+SELECT Value2
+FROM (
+	SELECT 2 AS Value2
+	) AS SampleData
+GO
+
+--But remember that the OUTPUT keyword also has other uses!
+CREATE PROCEDURE ProcOne @OutParameter INT OUTPUT
+AS
+SET @OutParameter = 1
+GO
+
+CREATE PROCEDURE ProcTwo @OutParameter INT OUT
+	,@InParameter INT
+AS
+SET @OutParameter = @InParameter
+GO
+
+CREATE PROCEDURE ProcThree (
+	@OutParameter INT OUT
+	,@InParameter INT
+	)
+AS
+SET @OutParameter = @InParameter
+GO
+
+DECLARE @out INT;
+
+EXEC ProcTwo @out OUT
+	,2
+
+EXEC ProcTwo @OutParameter = @out OUTPUT
+	,@InParameter = 3
+GO
+
+DROP PROCEDURE ProcOne
+
+DROP PROCEDURE ProcTwo
+
+DROP PROCEDURE ProcThree

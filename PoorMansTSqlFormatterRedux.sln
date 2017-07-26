@@ -1,0 +1,35 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26430.6
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3049502E-2389-4C0B-88EB-485A0C4C79C1}"
+	ProjectSection(SolutionItems) = preProject
+		LICENSE.rtf = LICENSE.rtf
+		LICENSE.txt = LICENSE.txt
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PoorMansTSqlFormatterRedux", "PoorMansTSqlFormatterRedux\PoorMansTSqlFormatterRedux.csproj", "{9384FC12-EA4F-471F-9AA0-C4C79CEC5582}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PoorMansTSqlFormatterRedux.Tests", "PoorMansTSqlFormatterRedux.Tests\PoorMansTSqlFormatterRedux.Tests.csproj", "{0B3FA87C-FA60-4E3D-9FBE-EC99D01D2EB2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9384FC12-EA4F-471F-9AA0-C4C79CEC5582}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9384FC12-EA4F-471F-9AA0-C4C79CEC5582}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9384FC12-EA4F-471F-9AA0-C4C79CEC5582}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9384FC12-EA4F-471F-9AA0-C4C79CEC5582}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B3FA87C-FA60-4E3D-9FBE-EC99D01D2EB2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B3FA87C-FA60-4E3D-9FBE-EC99D01D2EB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B3FA87C-FA60-4E3D-9FBE-EC99D01D2EB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B3FA87C-FA60-4E3D-9FBE-EC99D01D2EB2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

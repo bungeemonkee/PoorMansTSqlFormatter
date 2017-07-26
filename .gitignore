@@ -50,6 +50,9 @@ obj/
 [Rr]elease*/
 Ankh.NoLoad
 
+# Nuget
+packages/
+
 #Tooling
 _ReSharper*/
 *.resharper

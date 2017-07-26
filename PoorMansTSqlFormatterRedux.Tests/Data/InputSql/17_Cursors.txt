@@ -1,0 +1,51 @@
+﻿use master;
+go
+DECLARE @TestMethod Int
+DECLARE TestMethod$Me SCROLL Cursor 
+FOR
+SELECT 1 AS One FOR read only
+
+
+OPEN TestMethod$Me
+
+FETCH NEXT FROM TestMethod$Me 
+INTO @TestMethod
+
+WHILE @@FETCH_STATUS = 0
+BEGIN
+	PRINT 'I was here!'
+FETCH NEXT FROM TestMethod$Me
+INTO @TestMethod
+END
+CLOSE TestMethod$Me
+DEALLOCATE TestMethod$Me
+go
+
+
+CREATE TABLE #CursorFodder (One int, Two int)
+
+SET NOCOUNT ON
+INSERT INTO #CursorFodder VALUES (1, 2)
+SET NOCOUNT OFF
+
+DECLARE @TestMethod2 Int
+DECLARE TestMethod$Me_Again_François Cursor OPTIMISTIC
+FOR SELECT One FROM #CursorFodder 
+FOR UPDATE of One
+
+
+OPEN TestMethod$Me_Again_François
+
+FETCH NEXT FROM TestMethod$Me_Again_François
+INTO @TestMethod2
+
+WHILE @@FETCH_STATUS = 0
+BEGIN
+	PRINT 'I was here!'
+FETCH NEXT FROM TestMethod$Me_Again_François
+INTO @TestMethod2
+END
+CLOSE TestMethod$Me_Again_François
+DEALLOCATE TestMethod$Me_Again_François
+
+DROP TABLE #CursorFodder 

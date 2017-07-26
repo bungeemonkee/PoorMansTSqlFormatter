@@ -1,0 +1,9 @@
+﻿SELECT 1
+WHERE (((1=1or 10<5)and 20BETWEEN 2and 200)or 10*10=100)
+ 
+DECLARE @TestMethod1 Int, @TestMethod2 Int
+SELECT 1
+WHERE @TestMethod1 = 1 and @TestMethod2 = 2 and ((1=1and 20BETWEEN 2and 200)or 10*10=100)
+ 
+
+ 
