@@ -27,6 +27,7 @@ using PoorMansTSqlFormatterRedux.Formatters;
 namespace PoorMansTSqlFormatterRedux.Tests
 {
     [TestClass]
+    [Ignore]
     class TSqlStandardFormatterOptionsTests
     {
 

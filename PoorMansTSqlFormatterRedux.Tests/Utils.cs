@@ -25,10 +25,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PoorMansTSqlFormatterRedux.Interfaces;
 
 namespace PoorMansTSqlFormatterRedux.Tests
 {
+    [Ignore]
     static class Utils
     {
         public const string DATAFOLDER = "Data";

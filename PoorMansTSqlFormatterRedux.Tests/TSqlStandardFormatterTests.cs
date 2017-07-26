@@ -33,6 +33,7 @@ using PoorMansTSqlFormatterRedux.Tokenizers;
 namespace PoorMansTSqlFormatterRedux.Tests
 {
     [TestClass]
+    [Ignore]
     public class TSqlStandardFormatterTests
     {
         ISqlTokenizer _tokenizer;
