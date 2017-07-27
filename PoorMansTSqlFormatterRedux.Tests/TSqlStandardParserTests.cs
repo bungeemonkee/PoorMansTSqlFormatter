@@ -20,7 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System.Collections.Generic;
 using System.IO;
-using System.Xml;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PoorMansTSqlFormatterRedux.Parsers;
 using PoorMansTSqlFormatterRedux.Tokenizers;
@@ -28,33 +27,25 @@ using PoorMansTSqlFormatterRedux.Tokenizers;
 namespace PoorMansTSqlFormatterRedux.Tests
 {
     [TestClass]
-    [Ignore]
-    public class ParserTests
+    public class TSqlStandardParserTests
     {
-        public TestContext Context { get; set; }
+        public static IEnumerable<object[]> TestFiles => Utils.GetTestFiles();
 
-        public IEnumerable<string> GetParsedSqlFileNames()
+        [TestMethod]
+        [DynamicData("TestFiles")]
+        public void ExpectedParseTree(FileInfo inputFile, FileInfo parsedFile, FileInfo formattedFile)
         {
-            return Utils.FolderFileNameIterator(Utils.GetTestMethodContentFolder(Utils.PARSEDSQLFOLDER));
-        }
+            if (parsedFile == null)
+                Assert.Inconclusive("No parsed sql file for this input file.");
+            
+            var expectedText = parsedFile.GetAllText();
 
-        [TestMethod, DataSource("GetParsedSqlFileNames")]
-        public void ExpectedParseTree(string fileName)
-        {
-            var path = Path.Combine(Utils.GetTestMethodContentFolder(Utils.PARSEDSQLFOLDER), fileName);
-            var expectedXmlDoc = new XmlDocument();
-            expectedXmlDoc.PreserveWhitespace = true;
-            using (var stream = File.OpenRead(path))
-            {
-                expectedXmlDoc.Load(stream);
-            }
-
-            var inputSql = Utils.GetTestMethodFileContent(fileName, Utils.INPUTSQLFOLDER);
+            var inputSql = inputFile.GetAllText();
 
             var tokenized = new TSqlStandardTokenizer().TokenizeSQL(inputSql);
             var parsed = new TSqlStandardParser().ParseSQL(tokenized);
 
-            Assert.AreEqual(expectedXmlDoc.OuterXml, parsed.OuterXml);
+            Assert.AreEqual(expectedText, parsed.OuterXml);
         }
     }
 }
