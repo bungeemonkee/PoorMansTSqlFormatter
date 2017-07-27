@@ -27,8 +27,7 @@ using PoorMansTSqlFormatterRedux.Formatters;
 namespace PoorMansTSqlFormatterRedux.Tests
 {
     [TestClass]
-    [Ignore]
-    class TSqlStandardFormatterOptionsTests
+    public class TSqlStandardFormatterOptionsTests
     {
 
         //Make sure that a new TSqlStandardFormatterOptions defaults to what the default formatting options were circa v1.4.1, 2012-09-02

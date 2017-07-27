@@ -25,34 +25,40 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PoorMansTSqlFormatterRedux.Formatters;
 using PoorMansTSqlFormatterRedux.Interfaces;
 
 namespace PoorMansTSqlFormatterRedux.Tests
 {
-    [Ignore]
-    static class Utils
+    public static class Utils
     {
-        public const string DATAFOLDER = "Data";
-        public const string INPUTSQLFOLDER = "InputSql";
-        public const string PARSEDSQLFOLDER = "ParsedSql";
-        public const string STANDARDFORMATSQLFOLDER = "StandardFormatSql";
+        public const string InputSqlFolder = "Input";
+        public const string ParsedSqlFolder = "Parsed";
+        public const string StandardFormatSqlFolder = "Formatted";
 
-        public const string INVALID_SQL_WARNING = "THIS TestMethod FILE IS NOT VALID SQL";
-        public const string REFORMATTING_INCONSISTENCY_WARNING = "KNOWN SQL REFORMATTING INCONSISTENCY";
+        public const string InvalidSqlWarning = "THIS TestMethod FILE IS NOT VALID SQL";
+        public const string ReformattingInconsistencyWarning = "KNOWN SQL REFORMATTING INCONSISTENCY";
 
-        public static string GetTestMethodContentFolder(string folderName)
+        public static IEnumerable<object[]> GetTestFiles()
         {
-            var thisDirectory = new DirectoryInfo(".");
-            return Path.Combine(Path.Combine(thisDirectory.Parent.Parent.FullName, DATAFOLDER), folderName);
+            var inputFolder = Path.Combine(".", InputSqlFolder);
+            var inputDirectory = new DirectoryInfo(inputFolder);
+
+            foreach (var inputFile in inputDirectory.GetFiles())
+            {
+                var parsedFile = new FileInfo(Path.Combine(".", ParsedSqlFolder, inputFile.Name));
+                var formattedFile = new FileInfo(Path.Combine(".", StandardFormatSqlFolder, inputFile.Name));
+
+                yield return new object[] {inputFile, parsedFile.Exists ? parsedFile : null, formattedFile.Exists ? formattedFile : null };
+            }
         }
 
-        public static IEnumerable<string> FolderFileNameIterator(string path)
+        public static string GetAllText(this FileInfo file)
         {
-            var textFileFolder = new DirectoryInfo(path);
-            foreach (var sampleFile in textFileFolder.GetFiles())
+            using (var fileStream = file.OpenRead())
+            using (var textReader = new StreamReader(fileStream))
             {
-                yield return sampleFile.Name;
+                return textReader.ReadToEnd();
             }
         }
 
@@ -68,74 +74,23 @@ namespace PoorMansTSqlFormatterRedux.Tests
             StripElementNameFromXml(sqlTree, SqlXmlConstants.ENAME_COMMENT_SINGLELINE_CSTYLE);
         }
 
-        private static void StripElementNameFromXml(XmlDocument sqlTree, string elementName)
+        private static void StripElementNameFromXml(XmlNode sqlTree, string elementName)
         {
             var deletionCandidates = sqlTree.SelectNodes(string.Format("//*[local-name() = '{0}']", elementName));
             foreach (XmlElement deletionCandidate in deletionCandidates)
                 deletionCandidate.ParentNode.RemoveChild(deletionCandidate);
         }
 
-        public static IEnumerable<string> GetInputSqlFileNames()
+        public static TSqlStandardFormatterOptions GetConfig(string fileName)
         {
-            return FolderFileNameIterator(GetTestMethodContentFolder("InputSql"));
-        }
+            var openParens = fileName.IndexOf("(", StringComparison.Ordinal);
+            if (openParens < 0) return new TSqlStandardFormatterOptions {HTMLColoring = false};
 
-        public static string GetTestMethodFileContent(string fileName, string TestMethodFolderPath)
-        {
-            return File.ReadAllText(Path.Combine(Utils.GetTestMethodContentFolder(TestMethodFolderPath), fileName));
-        }
+            var closeParens = fileName.IndexOf(")", openParens, StringComparison.Ordinal);
+            if (closeParens < 0) return new TSqlStandardFormatterOptions {HTMLColoring = false};
 
-        public static string StripFileConfigString(string fileName)
-        {
-            var openParens = fileName.IndexOf("(");
-            if (openParens >= 0)
-            {
-                var closeParens = fileName.IndexOf(")", openParens);
-                if (closeParens >= 0)
-                {
-                    return fileName.Substring(0, openParens) + fileName.Substring(closeParens + 1);
-                }
-                return fileName;
-            }
-            return fileName;
+            var optionsString = fileName.Substring(openParens + 1, (closeParens - openParens) - 1);
+            return new TSqlStandardFormatterOptions(optionsString) {HTMLColoring = false};
         }
-
-        public static string GetFileConfigString(string fileName)
-        {
-            var openParens = fileName.IndexOf("(");
-            if (openParens >= 0)
-            {
-                var closeParens = fileName.IndexOf(")", openParens);
-                if (closeParens >= 0)
-                {
-                    return fileName.Substring(openParens + 1, (closeParens - openParens) - 1);
-                }
-                return "";
-            }
-            return "";
-        }
-
-        internal static Dictionary<string, string> GetConfigKeyCollection(string configString)
-        {
-            var configKeys = new Dictionary<string,string>();
-            if (configString != "")
-            {
-                var pairs = configString.Split(',');
-                foreach (var pair in pairs)
-                {
-                    var vals = pair.Split('=');
-                    if (vals.Length == 2)
-                    {
-                        configKeys.Add(vals[0], vals[1]);
-                    }
-                    else
-                    {
-                        throw new Exception(string.Format("TestMethod file config parens '{0}' contained invalid pair!", configString));
-                    }
-                }
-            }
-            return configKeys;
-        }
-
     }
 }

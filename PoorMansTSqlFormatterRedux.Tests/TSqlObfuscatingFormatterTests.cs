@@ -21,56 +21,47 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-using System.Xml;
+using System.Collections.Generic;
+using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PoorMansTSqlFormatterRedux.Formatters;
-using PoorMansTSqlFormatterRedux.Interfaces;
 using PoorMansTSqlFormatterRedux.Parsers;
 using PoorMansTSqlFormatterRedux.Tokenizers;
 
 namespace PoorMansTSqlFormatterRedux.Tests
 {
     [TestClass]
-    [Ignore]
     public class TSqlObfuscatingFormatterTests
     {
-
-        ISqlTokenizer _tokenizer;
-        ISqlTokenParser _parser;
-        TSqlStandardFormatter _standardFormatter;
-        TSqlObfuscatingFormatter _obfuscatingFormatter;
-
-        public TSqlObfuscatingFormatterTests()
+        private readonly TSqlStandardFormatterOptions _options = new TSqlStandardFormatterOptions
         {
-            _tokenizer = new TSqlStandardTokenizer();
-            _parser = new TSqlStandardParser();
-            _standardFormatter = new TSqlStandardFormatter(new TSqlStandardFormatterOptions
-                {
-                    TrailingCommas = true,
-                    KeywordStandardization = true
-                });
-            _obfuscatingFormatter = new TSqlObfuscatingFormatter();
-        }
+            TrailingCommas = true,
+            KeywordStandardization = true
+        };
 
-        [TestMethod, DataSource("PoorMansTSqlFormatterTests.Utils.GetInputSqlFileNames")]
-        public void ObfuscatingFormatReformatMatch(string FileName)
+        public static IEnumerable<object[]> TestFiles => Utils.GetTestFiles();
+
+        [TestMethod]
+        [DynamicData("TestFiles")]
+        public void ObfuscatingFormatReformatMatch(FileInfo inputFile, FileInfo parsedFile, FileInfo formattedFile)
         {
-            var inputSQL = Utils.GetTestMethodFileContent(FileName, Utils.INPUTSQLFOLDER);
-            var tokenized = _tokenizer.TokenizeSQL(inputSQL);
-            var parsedOriginal = _parser.ParseSQL(tokenized);
+            var inputSql = inputFile.GetAllText();
 
-            var obfuscatedSql = _obfuscatingFormatter.FormatSQLTree(parsedOriginal);
-            var tokenizedAgain = _tokenizer.TokenizeSQL(obfuscatedSql);
-            var parsedAgain = _parser.ParseSQL(tokenizedAgain);
-            var unObfuscatedSql = _standardFormatter.FormatSQLTree(parsedAgain);
+            if (inputSql.Contains(Utils.InvalidSqlWarning))
+                Assert.Inconclusive(Utils.InvalidSqlWarning);
+
+            var tokenized = new TSqlStandardTokenizer().TokenizeSQL(inputSql);
+            var parsedOriginal = new TSqlStandardParser().ParseSQL(tokenized);
+
+            var obfuscatedSql = new TSqlObfuscatingFormatter().FormatSQLTree(parsedOriginal);
+            var tokenizedAgain = new TSqlStandardTokenizer().TokenizeSQL(obfuscatedSql);
+            var parsedAgain = new TSqlStandardParser().ParseSQL(tokenizedAgain);
+            var unObfuscatedSql = new TSqlStandardFormatter(_options).FormatSQLTree(parsedAgain);
 
             Utils.StripCommentsFromSqlTree(parsedOriginal);
-            var standardFormattedSql = _standardFormatter.FormatSQLTree(parsedOriginal);
-
-            if (!inputSQL.Contains(Utils.INVALID_SQL_WARNING))
-            {
-                Assert.AreEqual(standardFormattedSql, unObfuscatedSql, "standard-formatted vs obfuscatd and reformatted");
-            }
+            var standardFormattedSql = new TSqlStandardFormatter(_options).FormatSQLTree(parsedOriginal);
+            
+            Assert.AreEqual(standardFormattedSql, unObfuscatedSql, "standard-formatted vs obfuscatd and reformatted");
         }
     }
 }

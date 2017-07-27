@@ -18,38 +18,49 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-using System.Xml;
+using System.Collections.Generic;
+using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PoorMansTSqlFormatterRedux.Formatters;
-using PoorMansTSqlFormatterRedux.Interfaces;
 using PoorMansTSqlFormatterRedux.Parsers;
 using PoorMansTSqlFormatterRedux.Tokenizers;
 
 namespace PoorMansTSqlFormatterRedux.Tests
 {
     [TestClass]
-    [Ignore]
     public class TSqlIdentityFormatterTests
     {
-        [TestMethod, DataSource("PoorMansTSqlFormatterTests.Utils.GetInputSqlFileNames")]
-        public void ContentUnchangedByIdentityTokenFormatter(string FileName)
+        public static IEnumerable<object[]> TestFiles => Utils.GetTestFiles();
+
+        [TestMethod]
+        [DynamicData("TestFiles")]
+        public void ContentUnchangedByIdentityTokenFormatter(FileInfo inputFile, FileInfo parsedFile, FileInfo formattedFile)
         {
-            var inputSQL = Utils.GetTestMethodFileContent(FileName, Utils.INPUTSQLFOLDER);
-            var tokenized = new TSqlStandardTokenizer().TokenizeSQL(inputSQL);
-            var outputSQL = new TSqlIdentityFormatter().FormatSQLTokens(tokenized);
-            if (!inputSQL.Contains(Utils.INVALID_SQL_WARNING))
-                Assert.AreEqual(outputSQL, inputSQL);
+            var inputSql = inputFile.GetAllText();
+
+            if (inputSql.Contains(Utils.InvalidSqlWarning))
+                Assert.Inconclusive(Utils.InvalidSqlWarning);
+
+            var tokenized = new TSqlStandardTokenizer().TokenizeSQL(inputSql);
+            var outputSql = new TSqlIdentityFormatter().FormatSQLTokens(tokenized);
+            
+            Assert.AreEqual(outputSql, inputSql);
         }
 
-        [TestMethod, DataSource("PoorMansTSqlFormatterTests.Utils.GetInputSqlFileNames")]
-        public void ContentUnchangedByIdentityTreeFormatter(string FileName)
+        [TestMethod]
+        [DynamicData("TestFiles")]
+        public void ContentUnchangedByIdentityTreeFormatter(FileInfo inputFile, FileInfo parsedFile, FileInfo formattedFile)
         {
-            var inputSQL = Utils.GetTestMethodFileContent(FileName, Utils.INPUTSQLFOLDER);
-            var tokenized = new TSqlStandardTokenizer().TokenizeSQL(inputSQL);
+            var inputSql = inputFile.GetAllText();
+
+            if (inputSql.Contains(Utils.InvalidSqlWarning))
+                Assert.Inconclusive(Utils.InvalidSqlWarning);
+
+            var tokenized = new TSqlStandardTokenizer().TokenizeSQL(inputSql);
             var parsed = new TSqlStandardParser().ParseSQL(tokenized);
-            var outputSQL = new TSqlIdentityFormatter().FormatSQLTree(parsed);
-            if (!inputSQL.Contains(Utils.INVALID_SQL_WARNING))
-                Assert.AreEqual(outputSQL, inputSQL);
+            var outputSql = new TSqlIdentityFormatter().FormatSQLTree(parsed);
+            
+            Assert.AreEqual(outputSql, inputSql);
         }
     }
 }
