@@ -28,7 +28,7 @@ build_script:
 - cmd: _build\build.bat PoorMansTSqlFormatterRedux
 
 test_script:
-- cmd: _build\test.bat PoorMansTSqlFormatterRedux
+- cmd: _build\test.bat PoorMansTSqlFormatterRedux netcoreapp1.1
 
 after_test:
 - cmd: _build\package.bat PoorMansTSqlFormatterRedux
