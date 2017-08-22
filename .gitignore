@@ -22,6 +22,7 @@ Deployment
 *.vbw
 
 #Visual Studio files
+.vs/
 *.[Oo]bj
 *.exe
 *.pdb
